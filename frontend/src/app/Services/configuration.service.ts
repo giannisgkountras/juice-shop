@@ -67,7 +67,7 @@ export interface Config {
     }
     googleOauth: {
       clientId: string
-      authorizedRedirects: any[]
+      authorizedRedirects: unknown[]
     }
   }
   challenges: {
@@ -84,12 +84,12 @@ export interface Config {
     isEnabled: boolean
     avatarImage: string
   }
-  products: any[]
-  memories: any[]
+  products: unknown[]
+  memories: unknown[]
   ctf: {
     showFlagsInNotifications: boolean
     showCountryDetailsInNotifications: string
-    countryMapping: any[]
+    countryMapping: unknown[]
   }
 }
 
@@ -99,7 +99,7 @@ export interface Config {
 export class ConfigurationService {
   private readonly hostServer = environment.hostServer
   private readonly host = this.hostServer + '/rest/admin'
-  private configObservable: any
+  private configObservable: Observable<Config> | undefined
   constructor (private readonly http: HttpClient) { }
 
   getApplicationConfiguration (): Observable<Config> {
