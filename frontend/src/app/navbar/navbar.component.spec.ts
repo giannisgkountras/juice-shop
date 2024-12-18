@@ -39,7 +39,7 @@ import { MatRadioModule } from '@angular/material/radio'
 import { MatSnackBarModule } from '@angular/material/snack-bar'
 
 class MockSocket {
-  on (str: string, callback: any) {
+  on(str: string, callback: (data: string) => void): void {
     callback(str)
   }
 }
@@ -47,14 +47,14 @@ class MockSocket {
 describe('NavbarComponent', () => {
   let component: NavbarComponent
   let fixture: ComponentFixture<NavbarComponent>
-  let administrationService: any
+  let administrationService: jasmine.SpyObj<AdministrationService>;
   let configurationService: any
   let userService: any
   let challengeService: any
   let translateService: any
-  let cookieService: any
+  let cookieService: jasmine.SpyObj<CookieService>;
   let mockSocket: any
-  let socketIoService: any
+  let socketIoService: jasmine.SpyObj<SocketIoService>;
   let location: Location
   let loginGuard
 
