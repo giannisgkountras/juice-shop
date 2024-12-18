@@ -23,7 +23,7 @@ module.exports = function productReviews() {
         { multi: true } // vuln-code-snippet vuln-line noSqlReviewsChallenge
       )
       .then(
-        (result: { modified: number; original: Array<{ author: any }> }) => {
+        (result: { modified: number; original: Array<{ author: string }> }) => {
           challengeUtils.solveIf(challenges.noSqlReviewsChallenge, () => {
             return result.modified > 1;
           }); // vuln-code-snippet hide-line

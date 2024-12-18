@@ -11,7 +11,7 @@ module.exports = function getLanguageList () { // TODO Refactor and extend to al
   return (req: Request, res: Response, next: NextFunction) => {
     const languages: Array<{ key: string, lang: string, icons: string[], shortKey: string, percentage: unknown, gauge: string }> = []
     let count = 0
-    let enContent: any
+    let enContent: Record<string, string>
 
     fs.readFile('frontend/dist/frontend/assets/i18n/en.json', 'utf-8', (err, content) => {
       if (err != null) {
@@ -54,7 +54,7 @@ module.exports = function getLanguageList () { // TODO Refactor and extend to al
       })
     })
 
-    async function calcPercentage (fileContent: any, enContent: any): Promise<number> {
+    async function calcPercentage (fileContent: Record<string, string>, enContent: Record<string, string>): Promise<number> {
       const totalStrings = Object.keys(enContent).length
       let differentStrings = 0
       return await new Promise((resolve, reject) => {
