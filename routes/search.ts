@@ -8,6 +8,8 @@ import { type Request, type Response, type NextFunction } from 'express'
 import { UserModel } from '../models/user'
 import { challenges } from '../data/datacache'
 import { QueryTypes } from 'sequelize'
+import { ParsedQs } from 'qs';
+
 
 import * as utils from '../lib/utils'
 const challengeUtils = require('../lib/challengeUtils')
@@ -16,11 +18,18 @@ class ErrorWithParent extends Error {
   parent: Error | undefined
 }
 
+
 // vuln-code-snippet start unionSqlInjectionChallenge dbSchemaChallenge
 module.exports = function searchProducts () {
   return (req: Request, res: Response, next: NextFunction) => {
-    let criteria: any = req.query.q === 'undefined' ? '' : req.query.q ?? ''
-    criteria = (criteria.length <= 200) ? criteria : criteria.substring(0, 200)
+    let criteria: string | ParsedQs | string[] | ParsedQs[] = req.query.q === 'undefined' ? '' : req.query.q ?? ''
+    try {
+      if (typeof criteria === 'string') {
+        criteria = (criteria.length <= 200) ? criteria : criteria.substring(0, 200)
+      }
+    } catch (err) {
+      next(err)
+    }
     const query = `SELECT * FROM Products WHERE ((name LIKE :criteria OR description LIKE :criteria) AND deletedAt IS NULL) ORDER BY name`;
     models.sequelize.query(query, {
         replacements: { criteria: `%${criteria}%` },
