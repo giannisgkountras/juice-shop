@@ -17,6 +17,7 @@ import type { Challenge } from 'data/types'
 import isHeroku from './is-heroku'
 import isDocker from './is-docker'
 import isWindows from './is-windows'
+import { IncomingHttpHeaders } from 'http'
 export { default as isDocker } from './is-docker'
 export { default as isWindows } from './is-windows'
 // import isGitpod from 'is-gitpod') // FIXME Roll back to this when https://github.com/dword-design/is-gitpod/issues/94 is resolve
@@ -127,7 +128,7 @@ export const downloadToFile = async (url: string, dest: string) => {
   }
 }
 
-export const jwtFrom = ({ headers }: { headers: any }) => {
+export const jwtFrom = ({ headers }: { headers: IncomingHttpHeaders }) : string | undefined => {
   if (headers?.authorization) {
     const parts = headers.authorization.split(' ')
     if (parts.length === 2) {
@@ -194,18 +195,28 @@ export function isChallengeEnabled (challenge: Challenge): boolean {
   return enabled
 }
 
-export const parseJsonCustom = (jsonString: string) => {
+// Helper Interface
+export interface JsonKeyValue {
+  key: string | null ;
+  value: string | number | boolean | null | object ;
+}
+
+export const parseJsonCustom = (jsonString: string): JsonKeyValue[] => {
   const parser = clarinet.parser()
-  const result: any[] = []
-  parser.onkey = parser.onopenobject = (k: any) => {
-    result.push({ key: k, value: null })
-  }
-  parser.onvalue = (v: any) => {
-    result[result.length - 1].value = v
-  }
-  parser.write(jsonString)
-  parser.close()
-  return result
+  const result: JsonKeyValue[] = []
+  parser.onkey = parser.onopenobject = (k: string) => {
+    result.push({ key: k, value: null });
+  };
+
+  parser.onvalue = (v: string | number | boolean | null | object) => {
+    if(result.length > 0){
+      result[result.length - 1].value = v;
+    }
+  };
+
+  parser.write(jsonString);
+  parser.close();
+  return result;
 }
 
 export const toSimpleIpAddress = (ipv6: string) => {
